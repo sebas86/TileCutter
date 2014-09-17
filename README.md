@@ -3,9 +3,20 @@ TileCutter
 
 Tile Cutter is simple tool for fast slicing many images into even more images. ;)
 
+###### Requirement
+
+[JDK](https://en.wikipedia.org/wiki/Java_Development_Kit) >=1.5, [Ant](https://ant.apache.org/).
+
 ###### Building
 
-Enter into sources directory ant fire [ant](https://ant.apache.org/).
+Enter into sources directory and fire [ant](https://ant.apache.org/).
+
+```sh
+$ cd sources
+$ ant
+```
+
+Application should start automatically after compilation.
 
 ###### Usage
 
