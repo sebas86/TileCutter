@@ -38,12 +38,16 @@ public class MainWindow extends JFrame
 	
 	private int sliceWidth = 256;
 	private int sliceHeight = 256;
+	private int widthOverlay = 16;
+	private int heightOverlay = 16;
 	
 	private JButton cancelSlicing = null;
 	private JTextArea console = null;
 	private JTextField destinationPathTextFiled = null;
 	private JTextField sliceWidthTextField = null;
 	private JTextField sliceHeightTextField = null;
+	private JTextField sliceWidthOverlayTextField = null;
+	private JTextField sliceHeightOverlayTextField = null;
 	
 	private Thread thread = null;
 	
@@ -60,6 +64,8 @@ public class MainWindow extends JFrame
 		createSeparatedDirForEachImage = preferences.getBoolean("createSeparatedDirForEachImage", createSeparatedDirForEachImage);
 		sliceWidth = preferences.getInt("sliceWidth", sliceWidth);
 		sliceHeight = preferences.getInt("sliceHeight", sliceHeight);
+		widthOverlay = preferences.getInt("widthOverlay", widthOverlay);
+		heightOverlay = preferences.getInt("heightOverlay", heightOverlay);
 		
 		destinationPathDialog = new JFileChooser();
 		destinationPathDialog.setDialogTitle("Select destination path");
@@ -96,7 +102,9 @@ public class MainWindow extends JFrame
 				
 				preferences.put("sliceWidth", sliceWidthTextField.getText());
 				preferences.put("sliceHeight", sliceHeightTextField.getText());
-				
+				preferences.put("widthOverlay", sliceWidthOverlayTextField.getText());
+				preferences.put("heightOverlay", sliceHeightOverlayTextField.getText());
+
 				preferences.put("destinationPath", destinationPathTextFiled.getText());
 				preferences.put("imagesCurrentDir", imagesDialog.getCurrentDirectory().getPath());
 				
@@ -197,6 +205,23 @@ public class MainWindow extends JFrame
 		
 		components.add(sliceWidthTextField);
 		components.add(sliceHeightTextField);
+
+		sliceSizePanel.add(new JLabel("Overlay width"));
+
+		sliceWidthOverlayTextField = new JTextField(Integer.toString(widthOverlay));
+		sliceWidthOverlayTextField.setMinimumSize(new Dimension(200, sliceWidthOverlayTextField.getMinimumSize().height));
+		sliceWidthOverlayTextField.setPreferredSize(sliceWidthOverlayTextField.getMinimumSize());
+		sliceSizePanel.add(sliceWidthOverlayTextField);
+		
+		sliceSizePanel.add(new JLabel("Overlay height"));
+		
+		sliceHeightOverlayTextField = new JTextField(Integer.toString(heightOverlay));
+		sliceHeightOverlayTextField.setMinimumSize(new Dimension(200, sliceHeightOverlayTextField.getMinimumSize().height));
+		sliceHeightOverlayTextField.setPreferredSize(sliceHeightOverlayTextField.getMinimumSize());
+		sliceSizePanel.add(sliceHeightOverlayTextField);
+		
+		components.add(sliceWidthOverlayTextField);
+		components.add(sliceHeightOverlayTextField);
 		
 		
 		// Destination path
@@ -486,8 +511,8 @@ public class MainWindow extends JFrame
 			
 			int width = image.getWidth();
 			int height = image.getHeight();
-			int slicesH = (int)Math.ceil((double)width / sliceWidth);
-			int slicesV = (int)Math.ceil((double)height / sliceHeight);
+			int slicesH = (int)Math.ceil((double)(width - widthOverlay) / (sliceWidth - widthOverlay) );
+			int slicesV = (int)Math.ceil((double)(height - heightOverlay) / (sliceHeight - heightOverlay) );
 			
 			int beginH, stepH;
 			int beginV, stepV;
@@ -521,8 +546,8 @@ public class MainWindow extends JFrame
 				{
 					for (int x = 0; x < slicesH; ++x)
 					{
-						saveSlice(image, beginH + x * stepH * sliceWidth,
-								beginV + y * stepV * sliceHeight, slicesPath, sliceNumber++);
+						saveSlice(image, beginH + x * stepH * (sliceWidth - widthOverlay),
+								beginV + y * stepV * (sliceHeight - heightOverlay), slicesPath, sliceNumber++);
 						
 						if (threadSchouldStop()) return 0;
 					}
@@ -534,8 +559,8 @@ public class MainWindow extends JFrame
 				{
 					for (int y = 0; y < slicesV; ++y)
 					{
-						saveSlice(image, beginH + x * stepH * sliceWidth,
-								beginV + y * stepV * sliceHeight, slicesPath, sliceNumber++);
+						saveSlice(image, beginH + x * stepH * (sliceWidth - widthOverlay),
+								beginV + y * stepV * (sliceHeight - heightOverlay), slicesPath, sliceNumber++);
 						
 						if (threadSchouldStop()) return 0;
 					}
